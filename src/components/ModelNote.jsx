@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import TodoItem from "./TodoItem";
+import TodoItem from "./TodoList";
 import save from "../assets/save.png";
 import add from "../assets/add.png";
 import cancel from "../assets/cancel.png";

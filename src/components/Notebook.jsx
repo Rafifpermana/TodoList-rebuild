@@ -2,8 +2,8 @@ import { useState } from "react";
 import useNotes from "../hooks/useNotes";
 import useTodos from "../hooks/useTodos";
 import { filterNotes } from "../utils/utils";
-import NoteItem from "./NoteItem";
-import NoteModal from "./NoteModal";
+import NoteItem from "./NoteList";
+import NoteModal from "./ModelNote";
 import task from "../assets/task.png";
 
 const Notebook = () => {

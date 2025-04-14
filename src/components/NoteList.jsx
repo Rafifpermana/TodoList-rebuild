@@ -52,7 +52,7 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
             ))}
             {(note.todos || []).length > 3 && (
               <div className="text-xs text-gray-400 dark:text-gray-500">
-                + {(note.todos || []).length - 3} todo lainnya...
+                + {(note.todos || []).length - 5} todo lainnya...
               </div>
             )}
           </div>
