@@ -1,5 +1,6 @@
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import "./styles/scrollbar.css";
+import "./styles/buttonTextResponsive.css";
 import Notebook from "./components/Notebook";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 

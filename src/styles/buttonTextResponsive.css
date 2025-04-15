@@ -1,0 +1,11 @@
+/* Responsive button text visibility */
+@media (max-width: 639px) {
+  .button-text {
+    display: none;
+  }
+}
+@media (min-width: 640px) {
+  .button-text {
+    display: inline;
+  }
+}

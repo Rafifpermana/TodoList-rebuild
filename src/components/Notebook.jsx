@@ -5,6 +5,7 @@ import { filterNotes } from "../utils/utils";
 import NoteItem from "./NoteList";
 import NoteModal from "./ModelNote";
 import task from "../assets/task.png";
+import add from "../assets/add.png";
 
 const Notebook = () => {
   const { notes, saveNote, deleteNote, currentNote, setCurrentNote } =
@@ -40,13 +41,14 @@ const Notebook = () => {
             placeholder="Search for notes or todo..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm border-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            className="flex-1 p-2 items-center bg-gray-100 dark:bg-gray-700 rounded-lg text-sm border-none focus:ring-2 focus:ring-blue-500 dark:text-white"
           />
           <button
             onClick={() => setShowModal(true)}
             className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all"
           >
-            New Notes
+            <img src={add} alt="add" className="w-5 h-5 sm:hidden mx-auto" />
+            <span className="hidden sm:inline">New Notes</span>
           </button>
         </div>
 
