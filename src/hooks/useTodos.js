@@ -3,11 +3,11 @@ import { useState } from "react";
 const useTodos = (currentNote, setCurrentNote) => {
   const [newTodoText, setNewTodoText] = useState("");
 
-  const addTodo = (dueDate) => {
-    if (!newTodoText.trim()) return;
+  const addTodo = (todoText, dueDate) => {
+    if (!todoText.trim()) return;
     const newTodo = {
       id: Date.now(),
-      text: newTodoText.trim(),
+      text: todoText.trim(),
       isComplete: false,
       dueDate: dueDate || null,
     };

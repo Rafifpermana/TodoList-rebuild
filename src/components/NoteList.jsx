@@ -32,24 +32,28 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
         <div className="border-t pt-3">
           <div className="text-xs text-gray-500 mb-2">Todo List:</div>
           <div className="space-y-2">
-            {(note.todos || []).slice(0, 3).map((todo) => (
-              <div key={todo.id} className="flex items-center gap-2 text-sm">
-                <img
-                  src={todo.isComplete ? tick : not_tick}
-                  alt="status"
-                  className="w-4 h-4"
-                />
-                <span
-                  className={`${
-                    todo.isComplete
-                      ? "line-through text-gray-400 dark:text-gray-500"
-                      : "text-gray-600 dark:text-gray-300"
-                  }`}
-                >
-                  {todo.text}
-                </span>
-              </div>
-            ))}
+            {(note.todos || [])
+              .slice()
+              .sort((a, b) => b.id - a.id)
+              .slice(0, 3)
+              .map((todo) => (
+                <div key={todo.id} className="flex items-center gap-2 text-sm">
+                  <img
+                    src={todo.isComplete ? tick : not_tick}
+                    alt="status"
+                    className="w-4 h-4"
+                  />
+                  <span
+                    className={`${
+                      todo.isComplete
+                        ? "line-through text-gray-400 dark:text-gray-500"
+                        : "text-gray-600 dark:text-gray-300"
+                    }`}
+                  >
+                    {todo.text}
+                  </span>
+                </div>
+              ))}
             {(note.todos || []).length > 3 && (
               <div className="text-xs text-gray-400 dark:text-gray-500">
                 + {(note.todos || []).length - 5} todo lainnya...

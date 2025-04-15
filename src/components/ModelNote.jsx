@@ -48,6 +48,33 @@ const NoteModal = ({
   const titleRef = useRef();
   const [dueDate, setDueDate] = useState("");
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [showDateInput, setShowDateInput] = useState(false);
+  const [pendingTodo, setPendingTodo] = useState("");
+
+  const handleAddClick = () => {
+    if (newTodoText.trim() === "") return;
+    setPendingTodo(newTodoText);
+    setNewTodoText("");
+    setShowDateInput(true);
+  };
+
+  const handleDateChange = (e) => {
+    setDueDate(e.target.value);
+  };
+
+  const handleDateConfirm = () => {
+    if (dueDate === "") return;
+    addTodo(pendingTodo, dueDate);
+    setDueDate("");
+    setShowDateInput(false);
+    setPendingTodo("");
+  };
+
+  const handleDateCancel = () => {
+    setShowDateInput(false);
+    setDueDate("");
+    setPendingTodo("");
+  };
 
   return (
     <>
@@ -97,11 +124,13 @@ const NoteModal = ({
                   value={newTodoText}
                   onChange={(e) => setNewTodoText(e.target.value)}
                   className="flex-1 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-                  onKeyPress={(e) => e.key === "Enter" && addTodo(dueDate)}
+                  onKeyPress={(e) => e.key === "Enter" && handleAddClick()}
+                  disabled={showDateInput}
                 />
                 <button
-                  onClick={() => addTodo(dueDate)}
+                  onClick={handleAddClick}
                   className="flex items-center text-white bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all"
+                  disabled={showDateInput}
                 >
                   <img
                     src={add}
@@ -111,24 +140,48 @@ const NoteModal = ({
                   <span className="hidden sm:inline">Add</span>
                 </button>
               </div>
-              <input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-none focus:ring-2 focus:ring-blue-500 dark:text-white mt-2 sm:mt-0"
-              />
+              {showDateInput && (
+                <>
+                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                    Select your date
+                  </label>
+                  <input
+                    type="date"
+                    value={dueDate}
+                    onChange={handleDateChange}
+                    className="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-none focus:ring-2 focus:ring-blue-500 dark:text-white mt-2 sm:mt-0"
+                  />
+                  <div className="flex justify-end mt-2 gap-2">
+                    <button
+                      onClick={handleDateCancel}
+                      className="px-4 py-2 rounded-lg bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-500"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDateConfirm}
+                      className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="space-y-2">
-              {(currentNote.todos || []).map((todo) => (
-                <TodoItem
-                  key={todo.id}
-                  todo={todo}
-                  onToggle={toggleTodo}
-                  onEdit={editTodo}
-                  onDelete={deleteTodo}
-                />
-              ))}
+              {(currentNote.todos || [])
+                .slice()
+                .sort((a, b) => b.id - a.id)
+                .map((todo) => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={toggleTodo}
+                    onEdit={editTodo}
+                    onDelete={deleteTodo}
+                  />
+                ))}
             </div>
           </div>
 
