@@ -114,7 +114,7 @@ const NoteModal = ({
           />
 
           <div className="mt-6">
-            <h3 className="font-medium mb-4">Todo List</h3>
+            <h3 className="font-medium mb-4 dark:text-white">Todo List</h3>
 
             <div className="flex flex-col gap-2 mb-4">
               <div className="flex items-center gap-2">
