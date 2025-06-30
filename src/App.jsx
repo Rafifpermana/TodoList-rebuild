@@ -1,7 +1,14 @@
+// src/App.jsx
+import { useState, useEffect } from "react";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import "./styles/scrollbar.css";
 import "./styles/buttonTextResponsive.css";
+
 import Notebook from "./components/Notebook";
+import Login from "./components/Login";
+
+import { auth } from "./firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 const ThemeToggle = () => {
@@ -9,28 +16,56 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="absolute top-4 right-4 p-2 rounded-full bg-white dark:bg-gray-800 shadow-lg"
+      // Perbarui ClassName
+      className="absolute top-5 right-5 p-2 rounded-full bg-black/10 dark:bg-white/10 backdrop-blur-lg shadow-lg z-10 text-white"
     >
       {darkMode ? (
-        <SunIcon className="w-6 h-6 text-yellow-400" />
+        <SunIcon className="w-6 h-6" />
       ) : (
-        <MoonIcon className="w-6 h-6 text-gray-700" />
+        <MoonIcon className="w-6 h-6" />
       )}
     </button>
   );
 };
 
 const AppContent = () => {
-  const { darkMode } = useTheme();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = () => {
+    signOut(auth);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-900 text-white">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode ? "dark" : ""
-      } scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent`}
-    >
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gray-900 dark:to-black transition-colors duration-300">
       <ThemeToggle />
-      <div className="min-h-screen flex flex-col items-center p-4 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
-        <Notebook />
+      {user && (
+        <button
+          onClick={handleLogout}
+          // Perbarui ClassName
+          className="absolute top-5 left-5 px-4 py-2 rounded-full bg-black/10 dark:bg-white/10 backdrop-blur-lg shadow-lg text-sm font-semibold text-white z-10"
+        >
+          Logout
+        </button>
+      )}
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        {user ? <Notebook /> : <Login />}
       </div>
     </div>
   );

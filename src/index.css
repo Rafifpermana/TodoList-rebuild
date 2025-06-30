@@ -1,3 +1,81 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.react-datepicker-wrapper .react-datepicker__input-container button {
+  @apply w-full text-left p-2 pl-10 bg-slate-200 dark:bg-slate-700 rounded-md border-transparent focus:ring-2 focus:ring-blue-500 dark:text-white transition;
+}
+
+.react-datepicker-popper {
+  z-index: 30 !important;
+}
+
+/* Menghilangkan panah segitiga default */
+.react-datepicker__triangle::before,
+.react-datepicker__triangle::after {
+  display: none !important;
+}
+
+/* --- [ LIGHT MODE STYLES ] --- */
+.react-datepicker {
+  @apply bg-white border-slate-200 rounded-lg shadow-lg font-sans !important;
+}
+.react-datepicker__header {
+  @apply bg-slate-50 border-b-slate-200 !important;
+  padding-top: 10px !important;
+}
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker__day-name {
+  @apply text-slate-800 font-semibold !important;
+}
+.react-datepicker__day,
+.react-datepicker__time-list-item {
+  @apply text-slate-700 rounded-md hover:bg-slate-200 !important;
+}
+
+/* --- [ DARK MODE STYLES ] --- */
+/* Menggunakan selector .dark untuk spesifisitas yang lebih tinggi */
+
+.dark .react-datepicker {
+  @apply bg-slate-800 border-slate-700 !important;
+}
+
+.dark .react-datepicker__header {
+  @apply bg-slate-900/50 border-b-slate-700 !important;
+}
+
+.dark .react-datepicker__current-month,
+.dark .react-datepicker-time__header,
+.dark .react-datepicker__day-name {
+  @apply text-slate-100 !important;
+}
+
+.dark .react-datepicker__day,
+.dark .react-datepicker__time-list-item {
+  @apply text-slate-300 hover:bg-slate-700 !important;
+}
+
+/* [FIX UTAMA] Gaya spesifik untuk kontainer Waktu dalam Dark Mode */
+.dark .react-datepicker__time-container {
+  @apply border-l-slate-700 !important;
+}
+.dark .react-datepicker__time-list,
+.dark .react-datepicker__time-box {
+  @apply bg-slate-800 !important;
+}
+.dark .react-datepicker__time-list-item--disabled {
+  @apply text-slate-600 !important;
+}
+
+/* --- [ GLOBAL STYLES - UNTUK SEMUA MODE ] --- */
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__time-list-item--selected {
+  @apply bg-blue-600 text-white hover:bg-blue-700 !important;
+}
+
+.react-datepicker__day--disabled {
+  @apply text-slate-300 dark:text-slate-600 !important;
+}
