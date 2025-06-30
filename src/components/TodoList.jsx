@@ -63,7 +63,13 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
   };
 
   return (
-    <div className="p-3 bg-white/80 dark:bg-slate-800/80 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+    <div
+      className={`p-2.5 rounded-lg transition-colors ${
+        isOverdue
+          ? "bg-red-100/50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50"
+          : "bg-white/50 dark:bg-slate-800/50"
+      }`}
+    >
       {isEditing ? (
         // TAMPILAN SAAT EDIT
         <div className="space-y-3">

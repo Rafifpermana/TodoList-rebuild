@@ -8,8 +8,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 
-// Anda bisa menggunakan gambar atau ilustrasi dari undraw.co, freepik.com, dll.
-// Simpan di folder assets Anda.
+// Ganti dengan path ke ilustrasi Anda
 import loginIllustration from "../assets/undraw_login_weas.svg";
 
 const Login = () => {
@@ -18,6 +17,7 @@ const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
 
+  // ... (fungsi handleAuth dan handleGoogleSignIn tetap sama)
   const handleAuth = async (e) => {
     e.preventDefault();
     setError("");
@@ -28,7 +28,7 @@ const Login = () => {
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.message.replace("Firebase: ", ""));
     }
   };
 
@@ -38,14 +38,14 @@ const Login = () => {
     try {
       await signInWithPopup(auth, provider);
     } catch (err) {
-      setError(err.message);
+      setError(err.message.replace("Firebase: ", ""));
     }
   };
 
   return (
     <div className="flex items-center justify-center w-full min-h-screen p-4">
-      <div className="relative flex w-full max-w-4xl overflow-hidden bg-white/10 backdrop-blur-md rounded-2xl shadow-lg ring-1 ring-white/20">
-        {/* Kolom Ilustrasi (Hilang di layar kecil) */}
+      <div className="flex w-full max-w-4xl overflow-hidden bg-white/50 dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl shadow-2xl ring-1 ring-black/10">
+        {/* Kolom Ilustrasi */}
         <div className="hidden md:flex flex-col items-center justify-center w-1/2 p-8 bg-gradient-to-br from-blue-500 to-purple-600">
           <img
             src={loginIllustration}
@@ -62,16 +62,18 @@ const Login = () => {
 
         {/* Kolom Form */}
         <div className="w-full md:w-1/2 p-8 sm:p-12">
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-2">
+          {/* --- PERUBAHAN WARNA TEKS --- */}
+          <h1 className="text-3xl font-bold text-slate-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-blue-400 dark:to-purple-500 mb-2">
             {isRegister ? "Create Account" : "Welcome Back"}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-slate-600 dark:text-slate-400 mb-8">
             {isRegister ? "Sign up to start noting." : "Sign in to continue."}
           </p>
 
           <form onSubmit={handleAuth}>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+              {/* --- PERUBAHAN WARNA TEKS --- */}
+              <label className="block mb-2 font-semibold text-slate-700 dark:text-slate-300">
                 Email
               </label>
               <input
@@ -80,11 +82,13 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                // --- PERUBAHAN GAYA INPUT ---
+                className="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
               />
             </div>
             <div className="mb-6">
-              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+              {/* --- PERUBAHAN WARNA TEKS --- */}
+              <label className="block mb-2 font-semibold text-slate-700 dark:text-slate-300">
                 Password
               </label>
               <input
@@ -93,31 +97,37 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                // --- PERUBAHAN GAYA INPUT ---
+                className="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
               />
             </div>
 
-            {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+            {error && (
+              <p className="mb-4 text-sm text-red-500 text-center">{error}</p>
+            )}
 
+            {/* --- PERUBAHAN GAYA TOMBOL --- */}
             <button
               type="submit"
-              className="w-full py-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg hover:opacity-90 transition-opacity"
+              className="w-full py-3 font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:opacity-90 transition-opacity shadow-lg"
             >
               {isRegister ? "Register" : "Login"}
             </button>
           </form>
 
           <div className="relative flex items-center my-6">
-            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
-            <span className="flex-shrink mx-4 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex-grow border-t border-slate-300 dark:border-slate-600"></div>
+            {/* --- PERUBAHAN WARNA TEKS --- */}
+            <span className="flex-shrink mx-4 text-sm text-slate-500 dark:text-slate-400">
               OR
             </span>
-            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            <div className="flex-grow border-t border-slate-300 dark:border-slate-600"></div>
           </div>
 
+          {/* --- PERUBAHAN GAYA TOMBOL --- */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full py-3 font-medium text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-gray-700/80 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center gap-2 hover:bg-white transition"
+            className="w-full py-3 font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700/80 border border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-md"
           >
             <svg className="w-5 h-5" viewBox="0 0 48 48">
               <path
@@ -141,13 +151,14 @@ const Login = () => {
             Sign in with Google
           </button>
 
-          <p className="mt-8 text-sm text-center text-gray-600 dark:text-gray-300">
+          {/* --- PERUBAHAN WARNA TEKS --- */}
+          <p className="mt-8 text-sm text-center text-slate-600 dark:text-slate-400">
             {isRegister
               ? "Already have an account? "
               : "Don't have an account? "}
             <button
               onClick={() => setIsRegister(!isRegister)}
-              className="font-semibold text-purple-500 hover:underline"
+              className="font-semibold text-purple-600 dark:text-purple-500 hover:underline"
             >
               {isRegister ? "Login" : "Register"}
             </button>

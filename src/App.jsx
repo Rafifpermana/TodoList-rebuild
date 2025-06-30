@@ -64,7 +64,7 @@ const AppContent = () => {
           Logout
         </button>
       )}
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-600 to-purple-700 dark:from-slate-900 dark:to-black transition-colors duration-300">
         {user ? <Notebook /> : <Login />}
       </div>
     </div>

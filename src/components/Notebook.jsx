@@ -79,6 +79,8 @@ const Notebook = () => {
                   setShowModal(true);
                 }}
                 onDelete={deleteNote}
+                onToggleTodo={toggleTodo}
+                onEditTodo={editTodo}
               />
             ))}
           </div>

@@ -206,9 +206,9 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
             ></div>
           </div>
 
-          {/* Detail Todo Urgent (tampil saat hover) */}
+          {/* Detail Todo Urgent - Selalu tampil di mobile, hover di desktop */}
           {hasUrgentTodos && (
-            <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="mt-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
               <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-2 border border-red-200 dark:border-red-800">
                 <div className="space-y-1">
                   {urgent.slice(0, 2).map((todo, index) => (
