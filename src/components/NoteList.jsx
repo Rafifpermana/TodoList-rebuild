@@ -66,6 +66,30 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
   const { urgent, upcoming } = getUpcomingTodos();
   const hasUrgentTodos = urgent.length > 0 || upcoming.length > 0;
 
+  // Fungsi untuk menentukan prioritas warna badge
+  const getBadgeStyle = () => {
+    if (urgent.some((todo) => todo.status === "overdue")) {
+      return {
+        bgColor: "bg-red-500",
+        textColor: "text-white",
+      };
+    } else if (urgent.length > 0) {
+      return {
+        bgColor: "bg-yellow-500",
+        textColor: "text-white",
+      };
+    } else if (upcoming.length > 0) {
+      return {
+        bgColor: "bg-blue-500",
+        textColor: "text-white",
+      };
+    }
+    return {
+      bgColor: "bg-red-500",
+      textColor: "text-white",
+    };
+  };
+
   // Fungsi untuk format peringatan waktu
   const formatTimeWarning = (todo) => {
     if (todo.status === "overdue") {
@@ -85,16 +109,20 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
     setIsExpanded(!isExpanded);
   };
 
+  const badgeStyle = getBadgeStyle();
+
   return (
     <div
       onClick={onEdit}
       className="bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm p-5 rounded-xl group relative transition-all duration-300 hover:scale-105 hover:shadow-xl border border-slate-200/20 dark:border-slate-700/50 cursor-pointer flex flex-col justify-between min-h-[200px]"
     >
-      {/* Badge Peringatan Todo Urgent */}
+      {/* Badge Peringatan Todo Urgent - Warna mengikuti prioritas */}
       {hasUrgentTodos && (
         <div className="absolute -top-2 -right-2 z-10">
           <div className="relative">
-            <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg animate-pulse">
+            <div
+              className={`${badgeStyle.bgColor} ${badgeStyle.textColor} text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg animate-pulse`}
+            >
               <ExclamationTriangleIcon className="w-3 h-3" />
               <span className="font-bold">
                 {urgent.length + upcoming.length}
@@ -103,22 +131,39 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
             {/* Tooltip untuk menampilkan detail peringatan */}
             <div className="absolute top-full right-0 mt-1 bg-slate-800 dark:bg-slate-700 text-white text-xs p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none min-w-[180px] z-20">
               <div className="space-y-1">
-                {urgent.map((todo, index) => (
-                  <div key={index} className="flex items-center gap-1">
-                    <ClockIcon className="w-3 h-3 text-red-400 flex-shrink-0" />
-                    <span className="truncate text-red-300">{todo.text}</span>
-                    <span className="text-red-400 text-xs">
-                      ({formatTimeWarning(todo)})
-                    </span>
-                  </div>
-                ))}
+                {urgent.map((todo, index) => {
+                  const iconColor =
+                    todo.status === "overdue"
+                      ? "text-red-400"
+                      : "text-yellow-400";
+                  const textColor =
+                    todo.status === "overdue"
+                      ? "text-red-300"
+                      : "text-yellow-300";
+                  const timeColor =
+                    todo.status === "overdue"
+                      ? "text-red-400"
+                      : "text-yellow-400";
+
+                  return (
+                    <div key={index} className="flex items-center gap-1">
+                      <ClockIcon
+                        className={`w-3 h-3 flex-shrink-0 ${iconColor}`}
+                      />
+                      <span className={`truncate ${textColor}`}>
+                        {todo.text}
+                      </span>
+                      <span className={`text-xs ${timeColor}`}>
+                        ({formatTimeWarning(todo)})
+                      </span>
+                    </div>
+                  );
+                })}
                 {upcoming.map((todo, index) => (
                   <div key={index} className="flex items-center gap-1">
-                    <ClockIcon className="w-3 h-3 text-yellow-400 flex-shrink-0" />
-                    <span className="truncate text-yellow-300">
-                      {todo.text}
-                    </span>
-                    <span className="text-yellow-400 text-xs">
+                    <ClockIcon className="w-3 h-3 text-blue-400 flex-shrink-0" />
+                    <span className="truncate text-blue-300">{todo.text}</span>
+                    <span className="text-blue-400 text-xs">
                       ({formatTimeWarning(todo)})
                     </span>
                   </div>
@@ -178,10 +223,38 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
                 Todo Progress
               </span>
               {hasUrgentTodos && (
-                <div className="flex items-center gap-1 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">
-                  <ExclamationTriangleIcon className="w-3 h-3 text-red-500" />
-                  <span className="text-xs text-red-600 dark:text-red-400 font-medium">
-                    {urgent.length > 0 ? "Urgent!" : "Upcoming"}
+                <div
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full ${
+                    urgent.some((todo) => todo.status === "overdue")
+                      ? "bg-red-100 dark:bg-red-900/30"
+                      : urgent.length > 0
+                      ? "bg-yellow-100 dark:bg-yellow-900/30"
+                      : "bg-blue-100 dark:bg-blue-900/30"
+                  }`}
+                >
+                  <ExclamationTriangleIcon
+                    className={`w-3 h-3 ${
+                      urgent.some((todo) => todo.status === "overdue")
+                        ? "text-red-500"
+                        : urgent.length > 0
+                        ? "text-yellow-500"
+                        : "text-blue-500"
+                    }`}
+                  />
+                  <span
+                    className={`text-xs font-medium ${
+                      urgent.some((todo) => todo.status === "overdue")
+                        ? "text-red-600 dark:text-red-400"
+                        : urgent.length > 0
+                        ? "text-yellow-600 dark:text-yellow-400"
+                        : "text-blue-600 dark:text-blue-400"
+                    }`}
+                  >
+                    {urgent.some((todo) => todo.status === "overdue")
+                      ? "Overdue!"
+                      : urgent.length > 0
+                      ? "Urgent!"
+                      : "Upcoming"}
                   </span>
                 </div>
               )}
@@ -198,9 +271,13 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 progressPercentage === 100
                   ? "bg-green-500"
-                  : hasUrgentTodos
-                  ? "bg-red-500"
-                  : "bg-blue-500"
+                  : urgent.length > 0
+                  ? urgent.some((todo) => todo.status === "overdue")
+                    ? "bg-red-500"
+                    : "bg-yellow-500"
+                  : upcoming.length > 0
+                  ? "bg-blue-500"
+                  : "bg-slate-400"
               }`}
               style={{ width: `${progressPercentage}%` }}
             ></div>
@@ -209,27 +286,52 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
           {/* Detail Todo Urgent - Selalu tampil di mobile, hover di desktop */}
           {hasUrgentTodos && (
             <div className="mt-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-              <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-2 border border-red-200 dark:border-red-800">
-                <div className="space-y-1">
-                  {urgent.slice(0, 2).map((todo, index) => (
+              <div className="space-y-1">
+                {[...urgent, ...upcoming].slice(0, 3).map((todo, index) => {
+                  const bgColor =
+                    todo.status === "overdue"
+                      ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                      : todo.status === "urgent"
+                      ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
+                      : "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
+
+                  const textColor =
+                    todo.status === "overdue"
+                      ? "text-red-700 dark:text-red-300"
+                      : todo.status === "urgent"
+                      ? "text-yellow-700 dark:text-yellow-300"
+                      : "text-blue-700 dark:text-blue-300";
+
+                  const timeColor =
+                    todo.status === "overdue"
+                      ? "text-red-600 dark:text-red-400"
+                      : todo.status === "urgent"
+                      ? "text-yellow-600 dark:text-yellow-400"
+                      : "text-blue-600 dark:text-blue-400";
+
+                  return (
                     <div
                       key={index}
-                      className="flex items-center justify-between text-xs"
+                      className={`rounded-lg p-2 border ${bgColor}`}
                     >
-                      <span className="text-red-700 dark:text-red-300 truncate pr-2">
-                        {truncateText(todo.text, 25)}
-                      </span>
-                      <span className="text-red-600 dark:text-red-400 font-medium whitespace-nowrap">
-                        {formatTimeWarning(todo)}
-                      </span>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className={`truncate pr-2 ${textColor}`}>
+                          {truncateText(todo.text, 25)}
+                        </span>
+                        <span
+                          className={`font-medium whitespace-nowrap ${timeColor}`}
+                        >
+                          {formatTimeWarning(todo)}
+                        </span>
+                      </div>
                     </div>
-                  ))}
-                  {urgent.length + upcoming.length > 2 && (
-                    <div className="text-xs text-red-600 dark:text-red-400 text-center">
-                      +{urgent.length + upcoming.length - 2} lainnya
-                    </div>
-                  )}
-                </div>
+                  );
+                })}
+                {urgent.length + upcoming.length > 3 && (
+                  <div className="text-xs text-slate-600 dark:text-slate-400 text-center bg-slate-100 dark:bg-slate-800 rounded-lg p-2">
+                    +{urgent.length + upcoming.length - 3} lainnya
+                  </div>
+                )}
               </div>
             </div>
           )}
