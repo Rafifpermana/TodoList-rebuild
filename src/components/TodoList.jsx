@@ -1,12 +1,13 @@
-// src/components/TodoList.jsx
 import { useState } from "react";
-import not_tick from "../assets/not_tick.png";
-import tick from "../assets/tick.png";
-import pensil from "../assets/pensil.png";
-import delete_icon from "../assets/delete_icon.png";
-import { CalendarDaysIcon, ClockIcon } from "@heroicons/react/24/outline";
+import {
+  CalendarDaysIcon,
+  ClockIcon,
+  ArrowPathIcon,
+  CheckCircleIcon as CheckCircleSolid,
+  CheckBadgeIcon,
+} from "@heroicons/react/24/solid";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline"; // <-- Hapus CircleIcon dari sini
 
-// Impor DatePicker untuk digunakan di form edit
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -28,13 +29,15 @@ const CustomInput = ({ value, onClick, icon }) => (
 const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  // State untuk form edit
   const [editText, setEditText] = useState(todo.text);
   const [editDate, setEditDate] = useState(
     todo.dueDate ? new Date(todo.dueDate) : new Date()
   );
   const [editTime, setEditTime] = useState(
     todo.dueDate ? new Date(todo.dueDate) : new Date()
+  );
+  const [editRecurrence, setEditRecurrence] = useState(
+    todo.recurrence || "none"
   );
 
   const isOverdue =
@@ -49,29 +52,51 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
         editTime.getHours(),
         editTime.getMinutes()
       );
-      onEdit(todo.id, editText, combinedDateTime.toISOString());
+      onEdit(todo.id, editText, combinedDateTime.toISOString(), editRecurrence);
       setIsEditing(false);
     }
   };
 
   const handleCancel = () => {
-    // Kembalikan state ke nilai semula jika dibatalkan
     setEditText(todo.text);
     setEditDate(todo.dueDate ? new Date(todo.dueDate) : new Date());
     setEditTime(todo.dueDate ? new Date(todo.dueDate) : new Date());
+    setEditRecurrence(todo.recurrence || "none");
     setIsEditing(false);
+  };
+
+  const renderChecklistIcon = () => {
+    const isRecurringCompleted =
+      todo.isComplete && todo.recurrence && todo.recurrence !== "none";
+
+    if (isRecurringCompleted) {
+      return (
+        <CheckBadgeIcon
+          className="w-6 h-6 text-indigo-500 cursor-pointer flex-shrink-0"
+          title={`Completed & Recurring (${todo.recurrence})`}
+        />
+      );
+    }
+    if (todo.isComplete) {
+      return (
+        <CheckCircleSolid className="w-6 h-6 text-green-500 cursor-pointer flex-shrink-0" />
+      );
+    }
+    // --- PERBAIKAN: Gunakan div untuk membuat lingkaran ---
+    return (
+      <div className="w-6 h-6 border-2 border-slate-400 dark:border-slate-500 rounded-full group-hover:border-slate-600 dark:group-hover:border-slate-300 transition-colors cursor-pointer flex-shrink-0" />
+    );
   };
 
   return (
     <div
-      className={`p-2.5 rounded-lg transition-colors ${
+      className={`group p-2.5 rounded-lg transition-colors ${
         isOverdue
           ? "bg-red-100/50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50"
           : "bg-white/50 dark:bg-slate-800/50"
       }`}
     >
       {isEditing ? (
-        // TAMPILAN SAAT EDIT
         <div className="space-y-3">
           <input
             type="text"
@@ -81,7 +106,7 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
             autoFocus
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div className="relative z-10">
+            <div>
               <DatePicker
                 selected={editDate}
                 onChange={(date) => setEditDate(date)}
@@ -91,54 +116,36 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
                     icon={<CalendarDaysIcon className="w-4 h-4" />}
                   />
                 }
-                popperClassName="react-datepicker-popper-custom"
-                popperPlacement="bottom-start"
-                popperModifiers={{
-                  preventOverflow: {
-                    enabled: true,
-                    escapeWithReference: false,
-                    boundariesElement: "viewport",
-                  },
-                  flip: {
-                    enabled: true,
-                  },
-                  offset: {
-                    enabled: true,
-                    offset: "0, 5",
-                  },
-                }}
               />
             </div>
-            <div className="relative z-10">
+            <div>
               <DatePicker
                 selected={editTime}
                 onChange={(date) => setEditTime(date)}
                 showTimeSelect
                 showTimeSelectOnly
                 timeIntervals={15}
-                timeCaption="Time"
                 dateFormat="h:mm aa"
                 customInput={
                   <CustomInput icon={<ClockIcon className="w-4 h-4" />} />
                 }
-                popperClassName="react-datepicker-popper-custom"
-                popperPlacement="bottom-start"
-                popperModifiers={{
-                  preventOverflow: {
-                    enabled: true,
-                    escapeWithReference: false,
-                    boundariesElement: "viewport",
-                  },
-                  flip: {
-                    enabled: true,
-                  },
-                  offset: {
-                    enabled: true,
-                    offset: "0, 5",
-                  },
-                }}
               />
             </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">
+              Recurrence
+            </label>
+            <select
+              value={editRecurrence}
+              onChange={(e) => setEditRecurrence(e.target.value)}
+              className="w-full p-2 bg-slate-200 dark:bg-slate-700 rounded-md border-transparent focus:ring-2 focus:ring-blue-500 dark:text-white transition"
+            >
+              <option value="none">None</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button
@@ -156,15 +163,9 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
           </div>
         </div>
       ) : (
-        // TAMPILAN NORMAL
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <img
-              src={todo.isComplete ? tick : not_tick}
-              alt="status"
-              className="w-5 h-5 cursor-pointer flex-shrink-0"
-              onClick={() => onToggle(todo.id)}
-            />
+            <div onClick={() => onToggle(todo.id)}>{renderChecklistIcon()}</div>
             <div className="flex flex-col min-w-0">
               <span
                 className={`truncate ${
@@ -178,37 +179,47 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
                 {todo.text}
               </span>
               {todo.dueDate && (
-                <span
-                  className={`text-xs ${
-                    isOverdue
-                      ? "text-red-400"
-                      : "text-slate-500 dark:text-slate-400"
-                  }`}
-                >
-                  {new Date(todo.dueDate).toLocaleString("id-ID", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  {isOverdue && " (overdue)"}
-                </span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span
+                    className={`text-xs ${
+                      isOverdue
+                        ? "text-red-400"
+                        : "text-slate-500 dark:text-slate-400"
+                    }`}
+                  >
+                    {new Date(todo.dueDate).toLocaleString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    {isOverdue && " (overdue)"}
+                  </span>
+                  {todo.recurrence &&
+                    todo.recurrence !== "none" &&
+                    !todo.isComplete && (
+                      <ArrowPathIcon
+                        className="w-3.5 h-3.5 text-blue-500"
+                        title={`Recurs ${todo.recurrence}`}
+                      />
+                    )}
+                </div>
               )}
             </div>
           </div>
-          <div className="flex gap-2 ml-2">
+          <div className="flex items-center gap-1 ml-2">
             <button
               onClick={() => setIsEditing(true)}
-              className="p-2 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition"
+              className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-full transition-colors"
             >
-              <img src={pensil} alt="edit" className="w-4 h-4" />
+              <PencilSquareIcon className="w-5 h-5" />
             </button>
             <button
               onClick={() => onDelete(todo.id)}
-              className="p-2 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition"
+              className="p-2 text-red-500/70 hover:text-red-600 hover:bg-red-500/10 rounded-full transition-colors"
             >
-              <img src={delete_icon} alt="delete" className="w-4 h-4" />
+              <TrashIcon className="w-5 h-5" />
             </button>
           </div>
         </div>
