@@ -74,7 +74,7 @@ const NoteModal = ({
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50"
               }`}
             >
-              📝 Note Content
+              Note Content
             </button>
             <button
               onClick={() => setActiveTab("todo")}
@@ -84,7 +84,7 @@ const NoteModal = ({
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50"
               }`}
             >
-              ✅ Todo List
+              Todo List
               {currentNote.todos && currentNote.todos.length > 0 && (
                 <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
                   {currentNote.todos.length}
@@ -137,7 +137,7 @@ const NoteModal = ({
             {activeTab === "todo" && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg text-slate-800 dark:text-white flex items-center gap-2">
-                  ✅ Todo List
+                  Todo List
                   {currentNote.todos && currentNote.todos.length > 0 && (
                     <span className="text-sm font-normal text-slate-600 dark:text-slate-400">
                       ({currentNote.todos.length} items)

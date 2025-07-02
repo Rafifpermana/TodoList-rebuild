@@ -22,23 +22,18 @@ const useNotes = () => {
     todos: [],
     date: "",
   });
-
   const user = auth.currentUser;
-
-  // Mengambil data dari Firestore saat pengguna berubah
   useEffect(() => {
     if (!user) {
       setNotes([]);
       return;
     }
-
     const notesCollection = collection(db, "notes");
     const q = query(
       notesCollection,
       where("userId", "==", user.uid),
       orderBy("date", "desc")
     );
-
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const notesData = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
@@ -46,13 +41,15 @@ const useNotes = () => {
       }));
       setNotes(notesData);
     });
-
     return () => unsubscribe();
   }, [user]);
 
   // Menyimpan atau mengupdate catatan
   const saveNote = async () => {
     if (!user || !currentNote.title.trim()) return;
+
+    // --- IMPROVEMENT: Simpan tanggal dalam format ISO ---
+    const dateToSave = new Date().toISOString();
 
     if (currentNote.id) {
       // Update catatan yang ada
@@ -61,7 +58,7 @@ const useNotes = () => {
         title: currentNote.title,
         content: currentNote.content,
         todos: currentNote.todos || [],
-        date: new Date().toLocaleString(),
+        date: dateToSave, // Gunakan format ISO
       });
     } else {
       // Tambah catatan baru
@@ -69,7 +66,7 @@ const useNotes = () => {
         title: currentNote.title,
         content: currentNote.content,
         todos: currentNote.todos || [],
-        date: new Date().toLocaleString(),
+        date: dateToSave, // Gunakan format ISO
         userId: user.uid,
       };
       await addDoc(collection(db, "notes"), newNoteData);
