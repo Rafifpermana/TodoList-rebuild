@@ -13,6 +13,9 @@ import {
 
 const NoteItem = ({ note, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  // --- STATE BARU UNTUK TOOLTIP ---
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+
   if (!note || !note.id) {
     return null;
   }
@@ -20,14 +23,11 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
   const { todos = [] } = note;
 
   // --- KALKULASI DIKELOMPOKKAN ---
-
-  // 1. Kalkulasi Progress Semua Todo
   const totalTodos = todos.length;
   const completedTodos = todos.filter((todo) => todo.isComplete).length;
   const progressPercentage =
     totalTodos > 0 ? (completedTodos / totalTodos) * 100 : 0;
 
-  // 2. Kalkulasi Progress Todo Berulang
   const recurringTodos = todos.filter(
     (todo) => todo.recurrence && todo.recurrence !== "none"
   );
@@ -40,11 +40,11 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
       ? (completedRecurringTodos / totalRecurringTodos) * 100
       : 0;
 
-  // 3. Kalkulasi untuk Badge Notifikasi
   const activeRecurringTodosCount = recurringTodos.filter(
     (todo) => !todo.isComplete
   ).length;
 
+  // (Fungsi-fungsi lain seperti getUpcomingTodos, formatTimeWarning, dll. tetap sama)
   const getUpcomingTodos = () => {
     if (!todos) return { urgent: [], upcoming: [] };
     const now = new Date();
@@ -102,11 +102,24 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
     return text && text.length > 120;
   };
 
+  // --- FUNGSI BARU UNTUK TOGGLE TOOLTIP ---
+  const toggleTooltip = (e) => {
+    e.stopPropagation(); // Mencegah klik menyebar ke kartu di belakangnya
+    setIsTooltipVisible((prev) => !prev);
+  };
+
   const badgeStyle = getBadgeStyle();
 
   return (
     <div
-      onClick={onEdit}
+      onClick={() => {
+        // Jika tooltip terbuka, klik kartu akan menutupnya dulu, bukan langsung edit
+        if (isTooltipVisible) {
+          setIsTooltipVisible(false);
+          return;
+        }
+        onEdit();
+      }}
       className="bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm p-5 rounded-xl group relative transition-all duration-300 hover:scale-105 hover:shadow-xl border border-slate-200/20 dark:border-slate-700/50 cursor-pointer flex flex-col justify-between min-h-[200px]"
     >
       <div className="absolute -top-2 -right-2 z-10 flex items-start gap-2">
@@ -121,15 +134,22 @@ const NoteItem = ({ note, onEdit, onDelete }) => {
 
         {hasUrgentTodos && (
           <div className="relative">
+            {/* --- IMPROVEMENT: Tambahkan onClick handler --- */}
             <div
-              className={`${badgeStyle.bgColor} ${badgeStyle.textColor} text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg animate-pulse`}
+              onClick={toggleTooltip}
+              className={`${badgeStyle.bgColor} ${badgeStyle.textColor} text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg animate-pulse cursor-pointer`}
             >
               <ExclamationTriangleIcon className="w-3 h-3" />
               <span className="font-bold">
                 {urgent.length + upcoming.length}
               </span>
             </div>
-            <div className="absolute top-full right-0 mt-1 bg-slate-800 dark:bg-slate-700 text-white text-xs p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none min-w-[220px] z-20">
+            {/* --- IMPROVEMENT: Logika tampilan tooltip --- */}
+            <div
+              className={`absolute top-full right-0 mt-1 bg-slate-800 dark:bg-slate-700 text-white text-xs p-2 rounded-lg shadow-lg pointer-events-none min-w-[220px] z-20 transition-opacity duration-300 ${
+                isTooltipVisible ? "opacity-100" : "opacity-0"
+              } md:group-hover:opacity-100`}
+            >
               <div className="space-y-1">
                 {urgent.map((todo, index) => (
                   <div key={index} className="flex items-center gap-1.5">
